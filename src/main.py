@@ -17,7 +17,7 @@ def difference(t1, t2):
 
 
 if __name__ == "__main__":
-    file_name = "\\AKSH-283\\weight_01.06.xlsx"
+    file_name = "\\AKSH-283\\weight_03.06.xlsx"
     dir = "..\\assets\\KMG" + file_name
 
     orig, time1 = data_io.time_step(dir)
