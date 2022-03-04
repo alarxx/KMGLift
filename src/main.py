@@ -1,7 +1,7 @@
 import data_io
 from visual_filter import visual_filter
-from labels import predict_labels, mse_draw, scale_labels, operations, label
-from data_visualizer import vis_labels
+from labels import predict_labels, scale_labels, operations, label
+from prod.data_visualizer import vis_labels
 import matplotlib.pyplot as plt
 import datetime
 

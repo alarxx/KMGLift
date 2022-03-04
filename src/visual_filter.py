@@ -56,8 +56,6 @@ def toVec(mat):
                 arr[c] = (rows - r - 1)
                 break
 
-
-
     return arr
 
 
