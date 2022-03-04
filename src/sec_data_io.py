@@ -22,44 +22,62 @@ def time_step(xlsx_dir):
     book = openpyxl.open(xlsx_dir, read_only=True)
     sheet = book.active
 
-    isFirstTime = True
-    old_time = 0
+    res_values = np.empty(86400) #[]
+    res_labels = np.empty(86400)
 
-    time_res = []
-    result = []
-
-    for strHMS, val in sheet.iter_rows(min_row=0, max_row=sheet.max_row, min_col=0, max_col=2):
-        if not isinstance(val.value, float):
+    for xlsx_strHMS, xlsx_val, xlsx_dur in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=0, max_col=3):
+        if not (isinstance(xlsx_val.value, float) or isinstance(xlsx_val.value, int)):
             continue
 
-        total_seconds = hms2sec(strHMS.value)
+        timeInSec = hms2sec(xlsx_strHMS.value)
+        duration = hms2sec(xlsx_dur.value)
 
-        # Записываем от начала записи времени, а не от нуля
-        if isFirstTime:
-            old_time = total_seconds
-            isFirstTime = False
+        for s in range(timeInSec, timeInSec+duration):
+            res_values[s] = xlsx_val.value
+            res_labels[s] = 3
 
-        for s in range(old_time, total_seconds):
-            time_res.append(s)
-            result.append(val.value)
+    return res_values, res_labels
 
-        old_time = total_seconds
 
-    return  np.asarray(time_res), np.asarray(result)
+"""
+    NODATA = 0
+    DOWN = 1
+    UP = 2
+    OTHER-STAG = 3
+"""
+def vis_labels(values, labels):
+    # [[NODATA], [UP], [DOWN], [OTHER-STAG]]
+    x, y = [[],[],[],[]], [[],[],[],[]]
+
+    for i in range(len(values)):
+        id = int(labels[i])
+        x[id].append(i)
+        y[id].append(values[i])
+
+    fig, ax = plt.subplots(1, 2, figsize=(15,5))
+
+    #orig
+    ax[0].plot(list(range(len(values))), values)
+
+    ax[1].scatter(x[0], y[0], label="NODATA", c="blue")
+    ax[1].scatter(x[1], y[1], label="DOWN", c="green")
+    ax[1].scatter(x[2], y[2], label="UP", c="red")
+    ax[1].scatter(x[3], y[3], label="OTHER-STAG", c="yellow")
+
+    ax[1].set_xlabel("time")
+    ax[1].set_ylabel("values")
+    ax[1].legend(loc="best")
+
+    plt.show()
+
 
 
 if __name__ == "__main__":
-    file_name = "weight_01.06.xlsx"
+
+    file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
 
-    t, y = time_step(dir)
+    y, l = time_step(dir)
 
-    print(y)
-    print(t)
+    vis_labels(y, l)
 
-    x = list(range(len(y)))
-    fig, ax = plt.subplots()
-    ax.plot(x, y)
-    ax.set_xlabel("time")
-    ax.set_ylabel("value")
-    plt.show()

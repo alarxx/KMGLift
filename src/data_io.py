@@ -35,9 +35,6 @@ def time_step(xlsx_dir, step=3):
         if not isinstance(val.value, float):
             continue
 
-        # t = str(time1.value).split(":")
-        # h, m, s = t[0], t[1], t[2]
-        # total_seconds = int(datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s)).total_seconds())
         total_seconds = hms2sec(strHMS.value)
 
 
