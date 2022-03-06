@@ -4,8 +4,11 @@ from prod.data_wrapper import DataHodler
 from prod.time_converter import hms2sec
 
 
-"""Returns values and labels"""
-def stretch_by_seconds(xlsx_dir, dataHodler=DataHodler(), day=0):
+""" 
+    Stretches data by seconds.
+    Returns holder of (values, labels).
+"""
+def load(xlsx_dir, dataHodler=DataHodler(), day=0):
     book = openpyxl.open(xlsx_dir, read_only=True)
     sheet = book.active
 
@@ -29,6 +32,6 @@ if __name__ == "__main__":
     file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
 
-    dataHodler = stretch_by_seconds(dir)
-    vis_labels(dataHodler._values, dataHodler._labels)
+    dataHodler = load(dir)
+    vis_labels(dataHodler)
 

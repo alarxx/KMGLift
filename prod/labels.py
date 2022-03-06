@@ -1,6 +1,7 @@
-from enum import Enum
+from enum import Enum, unique, auto
 
 
+@unique
 class Label(Enum):
     NODATA = 0
     DOWN = 1
@@ -9,6 +10,6 @@ class Label(Enum):
 
 
 if __name__ == "__main__":
-    mem = Label.NODATA
+    mem = Label.DOWN
     print(mem.value)
     print(mem.name)

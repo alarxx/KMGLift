@@ -1,4 +1,4 @@
-from prod.data_io import stretch_by_seconds
+from prod.data_io import load
 from prod.data_visualizer import vis_labels
 import numpy as np
 
@@ -57,10 +57,9 @@ if __name__ == "__main__":
     file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
 
-    dataHodler = stretch_by_seconds(dir)
+    dataHodler = load(dir)
+    filtered = visual_filter(dataHodler._values)
 
-    # y = visual_filter(y)
+    print(filtered)
 
-    # print(y)
-
-    # vis_labels(y, l)
+    vis_labels(values=filtered, labels=dataHodler._labels)

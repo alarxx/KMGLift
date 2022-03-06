@@ -10,12 +10,18 @@ from prod.labels import Label
 #     ax.set_ylabel("values")
 
 
-def vis_labels(values, labels):
+"""vis_labels(dataHodler) or vis_labels(values=values, labels=labels)"""
+def vis_labels(dataHodler=[], values=[], labels=[]):
+    if(len(values)==0 and len(labels)==0):
+        values = dataHodler._values
+        labels = dataHodler._labels
+
+
     # [[NODATA], [UP], [DOWN], [OTHER-STAG]]
     x, y = [[],[],[],[]], [[],[],[],[]]
 
     for i in range(len(values)):
-        id = int(labels[i])
+        id = int(labels[i].value)
         x[id].append(i)
         y[id].append(values[i])
 
