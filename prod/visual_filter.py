@@ -57,9 +57,9 @@ if __name__ == "__main__":
     file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
 
-    y, l = stretch_by_seconds(dir)
+    dataHodler = stretch_by_seconds(dir)
 
-    y = visual_filter(y)
+    # y = visual_filter(y)
 
     # print(y)
 
