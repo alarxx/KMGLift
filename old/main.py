@@ -1,7 +1,7 @@
 import data_io
 from visual_filter import visual_filter
 from labels import predict_labels, scale_labels, operations, label
-from prod.algo.data_visualizer import vis_labels
+from prod.data_visualizer import vis_labels
 import matplotlib.pyplot as plt
 import datetime
 
@@ -10,6 +10,7 @@ def time2sec(t):
     t = str(t).split(":")
     h, m, s = t[0], t[1], t[2]
     return int(datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s)).total_seconds())
+
 
 def difference(t1, t2):
     s = time2sec(t2) - time2sec(t1)

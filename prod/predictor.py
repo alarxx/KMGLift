@@ -1,52 +1,10 @@
 import numpy as np
 
-from prod.algo.data_io import loadLiftData
-from prod.algo.data_visualizer import vis_labels
-from prod.algo.data_wrapper import LiftData
+from prod.data_io import loadLiftDataSec
+from prod.data_visualizer import vis_labels
+from prod.data_wrapper import LiftDataSec, LiftOpsPeriods
 from prod.labels import Label
-from prod.algo.visual_filter import visual_filter
-
-""" 
-    Время операции - промежуток от первого ненулевого значения до нулевого значения
-    Примеры: 
-        list [0 1 2 3 0] -- time [1, 4) 
-        list [0 1 2 3 4] -- [1, len(list))
-"""
-class OperationsTime:
-    def __init__(self, values):
-        self.operationsTime = self.__operations_time(values)
-
-    def __operations_time(self, values):
-        operations = []
-
-        # Сложнаватая логика, пересмотреть!
-        isClose = True
-        start = 0
-        for i in range(len(values)):
-            if values[i] == 0:
-                if not isClose:
-                    operations.append((start, i))
-                isClose = True
-            elif isClose:
-                isClose = False
-                start = i
-
-        if not isClose:
-            operations.append((start, len(values)))
-
-        return operations
-
-    def start(self, id):
-        return self.operationsTime[id][0]
-
-    def end(self, id):
-        return self.operationsTime[id][1]
-
-    def __len__(self):
-        return len(self.operationsTime)
-
-    def __str__(self):
-        return str(self.operationsTime)
+from prod.visual_filter import visual_filter
 
 
 def by_apr(y):
@@ -73,19 +31,24 @@ def by_apr(y):
 def predict_labels(liftData):
     filtered = visual_filter(liftData)
     # print(filtered)
-    periods = OperationsTime(filtered)
+    periods = LiftOpsPeriods(filtered)
 
     for i in range(len(periods)):
         s = periods.start(i)
         e = periods.end(i)
         label = by_apr(filtered[s:e])
+
         liftData._labels[s:e] = [label] * (e-s)
+
+        periods._labels[i] = label
+
+    return periods
 
 
 def test_predictor():
     file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
-    liftData = loadLiftData(dir)
+    liftData = loadLiftDataSec(dir)
     predict_labels(liftData)
     vis_labels(liftData)
 
@@ -96,7 +59,7 @@ def test_oper_time():
            1, 1, 1,
            0,
            1]
-    periods = OperationsTime(arr)
+    periods = LiftOpsPeriods(arr)
     print(len(arr), periods)
 
     arr = [0,
@@ -106,19 +69,19 @@ def test_oper_time():
            0,
            1,
            0]
-    periods = OperationsTime(arr)
+    periods = LiftOpsPeriods(arr)
     print(len(arr), periods)
 
 
 def test_apr_labels():
     arr = [0, 1, 2, 3, 0, 3, 2, 1, 0, 1, 1, 1]
-    liftData = LiftData()
+    liftData = LiftDataSec()
     for i, val in enumerate(arr):
         liftData.add(i, val)
 
     print("liftDataPrev: \n", liftData)
 
-    periods = OperationsTime(liftData._values)
+    periods = LiftOpsPeriods(liftData._values)
     print("\nperiods: \n", periods, "\n")
 
     predict_labels(liftData)

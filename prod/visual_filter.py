@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from prod.algo.data_io import loadLiftData
-from prod.algo.data_visualizer import vis_labels
+from prod.data_io import loadLiftDataSec
+from prod.data_visualizer import vis_labels
 
 
 def vec2plotMat(dataHodler):
@@ -115,7 +115,7 @@ def visual_filter(liftData):
     # Фильтруем шум - выбросы
     kernel = np.ones((1, 90), np.uint8)
     img3 = cv2.morphologyEx(img2, cv2.MORPH_OPEN, kernel)
-    # cv2.imshow("filtered", resize_plotMat(img3))
+    cv2.imshow("filtered", resize_plotMat(img3))
     # cv2.waitKey(0)
 
     return plotMat2vec(img3)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
 
-    liftData = loadLiftData(dir)
+    liftData = loadLiftDataSec(dir)
     filtered = visual_filter(liftData)
 
     # print(liftData._values[8572], filtered[8572])
