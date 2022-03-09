@@ -1,5 +1,5 @@
 import numpy as np
-from prod import data_visualizer
+from prod.algo import data_visualizer
 
 
 def by_apr(y):

@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 from prod.labels import Label
 
 
-# def visualize(y):
-#     x = list(range(len(y)))
-#     fig, ax = plt.subplots()
-#     ax.plot(x, y)
-#     ax.set_xlabel("time")
-#     ax.set_ylabel("values")
+def visualize(y):
+    x = list(range(len(y)))
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    ax.set_xlabel("time")
+    ax.set_ylabel("values")
 
 
 """vis_labels(dataHodler) or vis_labels(values=values, labels=labels)"""

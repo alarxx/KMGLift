@@ -1,14 +1,14 @@
 import openpyxl
 from data_visualizer import vis_labels
-from prod.data_wrapper import DataHodler
-from prod.time_converter import hms2sec
+from prod.algo.data_wrapper import LiftData
+from prod.algo.time_converter import hms2sec
 
 
 """ 
     Stretches data by seconds.
     Returns holder of (values, labels).
 """
-def load(xlsx_dir, dataHodler=DataHodler(), day=0):
+def loadLiftData(xlsx_dir, liftData=LiftData(), day=0):
     book = openpyxl.open(xlsx_dir, read_only=True)
     sheet = book.active
 
@@ -22,9 +22,9 @@ def load(xlsx_dir, dataHodler=DataHodler(), day=0):
         duration = hms2sec(xlsx_dur.value)
 
         for s in range(timeInSec, timeInSec+duration):
-            dataHodler.add(daySec + s, xlsx_val.value)
+            liftData.add(daySec + s, xlsx_val.value)
 
-    return dataHodler
+    return liftData
 
 
 if __name__ == "__main__":
@@ -32,6 +32,6 @@ if __name__ == "__main__":
     file_name = "weight_10.06.xlsx"
     dir = "..\\assets\\KMG\\AKSH-283\\" + file_name
 
-    dataHodler = load(dir)
-    vis_labels(dataHodler)
+    liftData = loadLiftData(dir)
+    vis_labels(liftData)
 
