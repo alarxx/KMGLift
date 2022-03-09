@@ -4,7 +4,7 @@ from prod.labels import Label
     Класс отвечает только за хранение данных в секундах.
     За обратную интерпретацию должен отвечать уже другой класс
 """
-class DataHodler:
+class LiftData:
     def __init__(self):
         self._values = []
         self._labels = []
@@ -14,6 +14,8 @@ class DataHodler:
 
     def add(self, id, value, label=Label.OTHER):
         miss = (id-len(self))
+        # if(miss > 0):
+        #     print(id)
         self._values.extend([0] * miss + [value])
 
         self._labels.extend([Label.NODATA] * miss + [label])
@@ -34,9 +36,9 @@ class DataHodler:
 
 
 if __name__ == "__main__":
-    dataHodler = DataHodler()
-    dataHodler.add(5, 5)
-    dataHodler.add(6, 5)
-    dataHodler.add(7, 7)
-    dataHodler.add(8, 5)
-    print(dataHodler)
+    liftData = LiftData()
+    liftData.add(5, 5)
+    liftData.add(6, 5)
+    liftData.add(7, 7)
+    liftData.add(8, 5)
+    print(liftData)
