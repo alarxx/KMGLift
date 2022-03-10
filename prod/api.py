@@ -16,18 +16,12 @@ class LiftData:
             loadLiftDataSec(xlsx_files[i], liftDataSec, i)
         return liftDataSec
 
-
-def labelsBySeconds(liftData):
-    res = []
-
-    for s in range(len(liftData.liftDataSec)):
-
-        res.append(
-                sec2hms(s) + " " +
-                liftData.liftDataSec._labels[s].name
-        )
-
-    return res
+# Возврат листа по секундно (hmsTime - label)
+# def labelsBySeconds(liftData):
+#     res = []
+#     for s in range(len(liftData.liftDataSec)):
+#         res.append(sec2hms(s) + " " + liftData.liftDataSec._labels[s].name)
+#     return res
 
 
 if __name__ == "__main__":
@@ -36,12 +30,10 @@ if __name__ == "__main__":
     f1 = dir + "weight_09.06.xlsx"
     f2 = dir + "weight_10.06.xlsx"
 
-    liftData = LiftData([f2])
+    liftData = LiftData([f2]) # [f1, f2] для, перетекающих изо дня в день, процессов
 
     # print(liftData.liftDataSec)
-    # print(liftData.periods)
-    #
-    # print_periods(liftData)
-    # vis_labels(liftData)
+    print(liftData.periods)
 
-    print(labelsBySeconds(liftData))
+    print_periods(liftData)
+    vis_labels(liftData)

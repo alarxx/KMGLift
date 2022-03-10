@@ -28,20 +28,20 @@ def by_apr(y):
     return label
 
 
-def predict_labels(liftData):
-    filtered = visual_filter(liftData)
+def predict_labels(liftDataSec):
+    filtered = visual_filter(liftDataSec)
     # print(filtered)
     periods = LiftOpsPeriods(filtered)
 
     for i in range(len(periods)):
-        s = periods.start(i)
-        e = periods.end(i)
+        s = periods.startS(i)
+        e = periods.endS(i)
         label = by_apr(filtered[s:e])
 
-        liftData._labels[s:e] = [label] * (e-s)
+        liftDataSec._labels[s:e] = [label] * (e - s)
 
-        periods._labels[i] = label
-
+        periods._allLabels[i] = label
+    periods.sameSequence()
     return periods
 
 

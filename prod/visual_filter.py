@@ -130,5 +130,5 @@ if __name__ == "__main__":
 
     # print(liftData._values[8572], filtered[8572])
     # visualize(liftData._values)
-    vis_labels(values=filtered, labels=liftData._labels)
+    vis_labels(values=filtered, labels=liftData._allLabels)
     # vis_labels(values=liftData._values, labels=liftData._labels)

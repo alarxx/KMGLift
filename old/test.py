@@ -1,6 +1,6 @@
 from enum import Enum, unique
 
-""" Label - вид процесса"""
+
 @unique
 class Label(Enum):
     NODATA = 0
@@ -10,6 +10,5 @@ class Label(Enum):
 
 
 if __name__ == "__main__":
-    mem = Label.DOWN
-    print(mem.value)
-    print(mem.name)
+    if Label.UP == Label.UP:
+        print("lol")
