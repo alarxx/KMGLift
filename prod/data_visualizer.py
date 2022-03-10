@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+
+from prod.data_wrapper import LiftDataSec
 from prod.labels import Label
 
 
@@ -11,14 +13,17 @@ def visualize(y):
 
 
 """vis_labels(dataHodler) or vis_labels(values=values, labels=labels)"""
-def vis_labels(dataHodler=[], values=[], labels=[]):
-    if(len(values)==0 and len(labels)==0):
-        values = dataHodler._values
-        labels = dataHodler._labels
-
+def vis_labels(hodler=None, values=[], labels=[]):
+    if len(values) == 0 and len(labels) == 0:
+        if type(hodler) == LiftDataSec:
+            values = hodler._values
+            labels = hodler._labels
+        else: # type(liftData) == LiftData
+            values = hodler.liftDataSec._values
+            labels = hodler.liftDataSec._labels
 
     # [[NODATA], [UP], [DOWN], [OTHER-STAG]]
-    x, y = [[],[],[],[]], [[],[],[],[]]
+    x, y = [[], [], [], []], [[], [], [], []]
 
     for i in range(len(values)):
         id = int(labels[i].value)
@@ -40,3 +45,9 @@ def vis_labels(dataHodler=[], values=[], labels=[]):
     ax[1].legend(loc="best")
 
     plt.show()
+
+
+def print_periods(liftData):
+    for i in range(len(liftData.periods)):
+        s, e, l, dt = liftData.periods.time_label_dt(i)
+        print("time --", s + "-" + e, "; label --", l, "; duration --", dt)

@@ -1,4 +1,5 @@
 from prod.labels import Label
+from prod.time_converter import sec2hms
 
 """
     Класс отвечает только за хранение данных в секундах.
@@ -47,26 +48,27 @@ if __name__ == "__main__":
 """
 class LiftOpsPeriods:
     def __init__(self, values):
-        self._periods = []
-        self.__operations_time(values)
-
+        self._periods = self.__operations_time(values)
         self._labels = [Label.OTHER] * len(self)
 
     def __operations_time(self, values):
+        periods = []
         # Сложнаватая логика, пересмотреть!
         isClose = True
         start = 0
         for i in range(len(values)):
             if values[i] == 0:
                 if not isClose:
-                    self._periods.append((start, i))
+                    periods.append((start, i))
                 isClose = True
             elif isClose:
                 isClose = False
                 start = i
 
         if not isClose:
-            self._periods.append((start, len(values)))
+            periods.append((start, len(values)))
+
+        return periods
 
     def start(self, id):
         return self._periods[id][0]
@@ -74,13 +76,15 @@ class LiftOpsPeriods:
     def end(self, id):
         return self._periods[id][1]
 
-    def getOp(self, id):
-        return self._periods[id], self._labels[id]
+    def time_label_dt(self, id):
+        startTime = sec2hms(self._periods[id][0])
+        endTime = sec2hms(self._periods[id][1])
+        dt = sec2hms(self._periods[id][1] - self._periods[id][0])
+        label = self._labels[id]
+        return startTime, endTime, label, dt
 
     def __len__(self):
         return len(self._periods)
 
     def __str__(self):
         return "periods: " + str(self._periods) + "\nlabels: " + str(self._labels)
-
-
