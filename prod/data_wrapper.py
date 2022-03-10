@@ -42,8 +42,8 @@ if __name__ == "__main__":
 """ 
     period - время операции, промежуток от первого ненулевого значения до нулевого значения
     Примеры: 
-        1. list [0 1 2 3 0] -- time [1, 4) 
-        2. list [0 1 2 3 4] -- [1, len(list))
+        1. list [0 1 2 3 0] -- period [1, 4), Label.UP
+        2. list [0 1 2 3 4] -- period [1, len(list)), Label.UP
     Каждый период имеет label
 """
 class LiftOpsPeriods:

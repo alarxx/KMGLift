@@ -8,6 +8,9 @@ class Label(Enum):
     UP = 2
     OTHER = 3
 
+    # def __str__(self):
+    #     return str(self.name)
+
 
 if __name__ == "__main__":
     mem = Label.DOWN

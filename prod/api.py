@@ -2,6 +2,7 @@ from prod.data_io import loadLiftDataSec
 from prod.data_visualizer import vis_labels, print_periods
 from prod.data_wrapper import LiftDataSec
 from prod.predictor import predict_labels
+from prod.time_converter import sec2hms
 
 
 class LiftData:
@@ -16,6 +17,19 @@ class LiftData:
         return liftDataSec
 
 
+def labelsBySeconds(liftData):
+    res = []
+
+    for s in range(len(liftData.liftDataSec)):
+
+        res.append(
+                sec2hms(s) + " " +
+                liftData.liftDataSec._labels[s].name
+        )
+
+    return res
+
+
 if __name__ == "__main__":
     dir = "..\\assets\\KMG\\AKSH-283\\"
 
@@ -24,8 +38,10 @@ if __name__ == "__main__":
 
     liftData = LiftData([f2])
 
-    print(liftData.liftDataSec)
-    print(liftData.periods)
+    # print(liftData.liftDataSec)
+    # print(liftData.periods)
+    #
+    # print_periods(liftData)
+    # vis_labels(liftData)
 
-    print_periods(liftData)
-    vis_labels(liftData)
+    print(labelsBySeconds(liftData))
