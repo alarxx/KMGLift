@@ -1,7 +1,7 @@
 import openpyxl
 from data_visualizer import vis_labels
-from prod.data_wrapper import LiftDataSec
-from prod.time_converter import hms2sec
+from prod_test.data_wrapper import LiftDataSec
+from prod_test.time_converter import hms2sec
 
 
 """ 

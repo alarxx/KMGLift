@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
-from prod.data_wrapper import LiftDataSec
-from prod.labels import Label
+from prod_test.data_wrapper import LiftDataSec
+from prod_test.labels import Label
 
 
 def visualize(y):

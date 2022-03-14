@@ -1,8 +1,8 @@
-from prod.data_io import loadLiftDataSec
-from prod.data_visualizer import vis_labels, print_periods
-from prod.data_wrapper import LiftDataSec
-from prod.predictor import predict_labels
-from prod.time_converter import sec2hms
+from prod_test.data_io import loadLiftDataSec
+from prod_test.data_visualizer import vis_labels, print_periods
+from prod_test.data_wrapper import LiftDataSec
+from prod_test.predictor import predict_labels
+from prod_test.time_converter import sec2hms
 
 
 class LiftData:

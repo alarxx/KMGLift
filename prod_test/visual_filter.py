@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from prod.data_io import loadLiftDataSec
-from prod.data_visualizer import vis_labels
+from prod_test.data_io import loadLiftDataSec
+from prod_test.data_visualizer import vis_labels
 
 
 def vec2plotMat(dataHodler):

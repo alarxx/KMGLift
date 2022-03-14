@@ -1,5 +1,5 @@
-from prod.labels import Label
-from prod.time_converter import sec2hms
+from prod_test.labels import Label
+from prod_test.time_converter import sec2hms
 
 """
     Класс отвечает только за хранение данных в секундах.
@@ -29,13 +29,6 @@ class LiftDataSec:
         return "_values: " + str(self._values) + " - ${_maxVal} = " + str(self._maxVal) + "\n_labels: " + str(self._labels)
 
 
-if __name__ == "__main__":
-    liftData = LiftDataSec()
-    liftData.add(5, 5)
-    liftData.add(6, 5)
-    liftData.add(7, 7)
-    liftData.add(8, 5)
-    print(liftData)
 
 
 """ 
@@ -122,3 +115,12 @@ class LiftOpsPeriods:
                 # Добавляем label
                 if isClosed == True:
                     self._labels.append(lastLabel)
+
+
+if __name__ == "__main__":
+    liftData = LiftDataSec()
+    liftData.add(5, 5)
+    liftData.add(6, 5)
+    liftData.add(7, 7)
+    liftData.add(8, 5)
+    print(liftData)

@@ -1,10 +1,10 @@
 import numpy as np
 
-from prod.data_io import loadLiftDataSec
-from prod.data_visualizer import vis_labels
-from prod.data_wrapper import LiftDataSec, LiftOpsPeriods
-from prod.labels import Label
-from prod.visual_filter import visual_filter
+from prod_test.data_io import loadLiftDataSec
+from prod_test.data_visualizer import vis_labels
+from prod_test.data_wrapper import LiftDataSec, LiftOpsPeriods
+from prod_test.labels import Label
+from prod_test.visual_filter import visual_filter
 
 
 def by_apr(y):
