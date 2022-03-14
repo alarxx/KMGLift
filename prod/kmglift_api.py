@@ -1,5 +1,8 @@
 import datetime
+import os
 from enum import Enum, unique
+from pathlib import Path
+
 import numpy as np
 import cv2
 import openpyxl
@@ -73,8 +76,8 @@ class LiftOpsPeriods:
         self._allPeriods = self.__operations_time(values)
         self._allLabels = [Label.OTHER] * len(self)
 
-        self._periods = []
-        self._labels = []
+        # self._periods = []
+        # self._labels = []
 
     def __operations_time(self, values):
         periods = []
@@ -101,15 +104,20 @@ class LiftOpsPeriods:
     def endS(self, id):
         return self._allPeriods[id][1]
 
+    def dtS(self, id):
+        return self.endS(id) - self.startS(id)
+
+    def startHMS(self, id):
+        return sec2hms(self._allPeriods[id][0])
+
+    def endHMS(self, id):
+        return sec2hms(self._allPeriods[id][1])
+
+    def dtHMS(self, id):
+        return sec2hms(self.endS(id) - self.startS(id))
+
     def label(self, id):
         return self._allLabels[id]
-
-    def time_label_dt(self, id):
-        startTime = sec2hms(self.startS(id))
-        endTime = sec2hms(self.endS(id))
-        dt = sec2hms(self.endS(id) - self.startS(id))
-        label = self.label(id)
-        return startTime, endTime, label, dt
 
     def __len__(self):
         return len(self._allPeriods)
@@ -122,28 +130,28 @@ class LiftOpsPeriods:
         Объединение одинаковых последовательных операций в одну 
         Не учитаваются, перескакивает промежутки между оперциями
     """
-    def sameSequence(self):
-        #На этой стадии нет лейбла OTHER, только UP and DOWN
-        lastLabel = Label.OTHER
-        isClosed = True
-        for i in range(len(self)):
-            if isClosed:
-                # Открытие
-                self._periods.append([self.startS(i), self.endS(i)])
-                lastLabel = self.label(i)
-                isClosed = False
-            else:
-                # закрытие
-                if i == (len(self)-1): # Последняя оперция
-                    self._periods[len(self._periods) - 1][1] = self.endS(i)
-                    isClosed = True
-                elif lastLabel != self.label(i+1):
-                    self._periods[len(self._periods) - 1][1] = self.endS(i)
-                    isClosed = True
-
-                # Добавляем label
-                if isClosed == True:
-                    self._labels.append(lastLabel)
+    # def sameSequence(self):
+    #     #На этой стадии нет лейбла OTHER, только UP and DOWN
+    #     lastLabel = Label.OTHER
+    #     isClosed = True
+    #     for i in range(len(self)):
+    #         if isClosed:
+    #             # Открытие
+    #             self._periods.append([self.startS(i), self.endS(i)])
+    #             lastLabel = self.label(i)
+    #             isClosed = False
+    #         else:
+    #             # закрытие
+    #             if i == (len(self)-1): # Последняя оперция
+    #                 self._periods[len(self._periods) - 1][1] = self.endS(i)
+    #                 isClosed = True
+    #             elif lastLabel != self.label(i+1):
+    #                 self._periods[len(self._periods) - 1][1] = self.endS(i)
+    #                 isClosed = True
+    #
+    #             # Добавляем label
+    #             if isClosed == True:
+    #                 self._labels.append(lastLabel)
 
 
 
@@ -329,7 +337,7 @@ def predict_labels(liftDataSec):
         liftDataSec._labels[s:e] = [label] * (e - s)
 
         periods._allLabels[i] = label
-    periods.sameSequence()
+    # periods.sameSequence()
     return periods
 
 
@@ -337,6 +345,10 @@ def predict_labels(liftDataSec):
 
 class LiftData:
     def __init__(self, xlsx_files):
+        # base, ext = os.path.splitext(xlsx_files[0])
+        # dirpath, filename = os.path.split(base)
+        self.date = Path(xlsx_files[0]).stem # Без нескольких расширений
+
         self.liftDataSec = self.__loadData(xlsx_files)
         self.periods = predict_labels(self.liftDataSec)
 
@@ -346,12 +358,30 @@ class LiftData:
             loadLiftDataSec(xlsx_files[i], liftDataSec, i)
         return liftDataSec
 
+    # Пока что возвращает все процессы, которые удается найти
+    def getData(self):
+        start, end, duration, y = [], [], [], []
 
+        p = self.periods
+        for id in range(len(p)):
+            start.append(self.date +" "+ p.startHMS(id))
+            end.append(self.date +" " + p.endHMS(id))
+            duration.append(p.dtS(id))
+            y.append(p.label(id).name)
+
+        return {
+            'data': {
+                'start': start,
+                'end': end,
+                'duration': duration,
+                'y': y
+            }
+        }
 
 
 # Возврат листа по секундно (hmsTime - label)
-def labelsBySeconds(liftData):
-    res = []
-    for s in range(len(liftData.liftDataSec)):
-        res.append(sec2hms(s) + " " + liftData.liftDataSec._labels[s].name)
-    return res
+# def labelsBySeconds(liftData):
+#     res = []
+#     for s in range(len(liftData.liftDataSec)):
+#         res.append(sec2hms(s) + " " + liftData.liftDataSec._labels[s].name)
+#     return res

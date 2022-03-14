@@ -1,4 +1,4 @@
-from prod.kmglift_api import LiftData, labelsBySeconds
+from prod.kmglift_api import LiftData
 
 if __name__ == "__main__":
     dir = "..\\assets\\KMG\\AKSH-283\\"
@@ -9,9 +9,11 @@ if __name__ == "__main__":
     liftData = LiftData([f2]) # [f1, f2] для, перетекающих изо дня в день, процессов
 
     # print(liftData.liftDataSec)
-    print(liftData.periods)
+    # print(liftData.periods)
+
+    print(liftData.getData())
 
     # print_periods(liftData)
     # vis_labels(liftData)
 
-    print(labelsBySeconds(liftData))
+    # print(labelsBySeconds(liftData))
