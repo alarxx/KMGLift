@@ -1,14 +1,5 @@
-from enum import Enum, unique
-
-
-@unique
-class Label(Enum):
-    NODATA = 0
-    DOWN = 1
-    UP = 2
-    OTHER = 3
-
-
 if __name__ == "__main__":
-    if Label.UP == Label.UP:
-        print("lol")
+    arr = ["lol", "lol2", "lol3"]
+    print(arr)
+    arr = list(map(lambda x : x+"ku", arr))
+    print(arr)

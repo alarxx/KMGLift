@@ -103,6 +103,18 @@ class LiftOpsPeriods:
 
         return periods
 
+    def start(self):
+        return list(map(lambda x: sec2hms(x[0]), self._allPeriods))
+
+    def end(self):
+        return list(map(lambda x: sec2hms(x[1]), self._allPeriods))
+
+    def dt(self):
+        return list(map(lambda x: (x[1] - x[0]), self._allPeriods))
+
+    def label(self):
+        return list(map(lambda x: x.name, self._allLabels))
+
     def startS(self, id):
         return self._allPeriods[id][0]
 
@@ -111,18 +123,18 @@ class LiftOpsPeriods:
 
     def dtS(self, id):
         return self.endS(id) - self.startS(id)
-
-    def startHMS(self, id):
-        return sec2hms(self.startS(id))
-
-    def endHMS(self, id):
-        return sec2hms(self.endS(id))
-
-    def dtHMS(self, id):
-        return sec2hms(self.endS(id))
-
-    def label(self, id):
-        return self._allLabels[id]
+    #
+    # def startHMS(self, id):
+    #     return sec2hms(self.startSec(id))
+    #
+    # def endHMS(self, id):
+    #     return sec2hms(self.endSec(id))
+    #
+    # def dtHMS(self, id):
+    #     return sec2hms(self.endSec(id))
+    #
+    # def label(self, id):
+    #     return self._allLabels[id]
 
     def __len__(self):
         return len(self._allPeriods)
@@ -372,14 +384,11 @@ class LiftData:
 
     # Пока что возвращает все процессы, которые удается найти
     def getData(self):
-        start, end, duration, y = [], [], [], []
-
         p = self.periods
-        for id in range(len(p)):
-            start.append(self.date + " " + p.startHMS(id))
-            end.append(self.date + " " + p.endHMS(id))
-            duration.append(p.dtS(id))
-            y.append(p.label(id).name)
+        start = p.start()
+        end = p.end()
+        duration = p.dt()
+        y = p.label()
 
         return {
             'data': {
