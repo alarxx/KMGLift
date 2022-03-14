@@ -334,6 +334,14 @@ def predict_labels(liftDataSec):
 
 
 
+# Возврат листа по секундно (hmsTime - label)
+def labelsBySeconds(liftData):
+    res = []
+    for s in range(len(liftData.liftDataSec)):
+        res.append(sec2hms(s) + " " + liftData.liftDataSec._labels[s].name)
+    return res
+
+
 
 class LiftData:
     def __init__(self, xlsx_files):
