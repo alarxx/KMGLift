@@ -103,38 +103,38 @@ class LiftOpsPeriods:
 
         return periods
 
-    def start(self):
+    def getAllStartsHMS(self):
         return list(map(lambda x: sec2hms(x[0]), self._allPeriods))
 
-    def end(self):
+    def getAllEndsHMS(self):
         return list(map(lambda x: sec2hms(x[1]), self._allPeriods))
 
-    def dt(self):
+    def getAllDtsSec(self):
         return list(map(lambda x: (x[1] - x[0]), self._allPeriods))
 
-    def label(self):
+    def getAllLabelNames(self):
         return list(map(lambda x: x.name, self._allLabels))
 
-    def startS(self, id):
+    def getStartS(self, id):
         return self._allPeriods[id][0]
 
-    def endS(self, id):
+    def getEndS(self, id):
         return self._allPeriods[id][1]
 
-    def dtS(self, id):
-        return self.endS(id) - self.startS(id)
-    #
-    # def startHMS(self, id):
-    #     return sec2hms(self.startSec(id))
-    #
-    # def endHMS(self, id):
-    #     return sec2hms(self.endSec(id))
-    #
-    # def dtHMS(self, id):
-    #     return sec2hms(self.endSec(id))
-    #
-    # def label(self, id):
-    #     return self._allLabels[id]
+    def getDtS(self, id):
+        return self.getEndS(id) - self.getStartS(id)
+
+    def getStartHMS(self, id):
+        return sec2hms(self.startSec(id))
+
+    def getEndHMS(self, id):
+        return sec2hms(self.endSec(id))
+
+    def getDtHMS(self, id):
+        return sec2hms(self.endSec(id))
+
+    def getLabel(self, id):
+        return self._allLabels[id]
 
     def __len__(self):
         return len(self._allPeriods)
@@ -350,8 +350,8 @@ def predict_labels(liftDataSec):
     periods = LiftOpsPeriods(filtered)
 
     for i in range(len(periods)):
-        s = periods.startS(i)
-        e = periods.endS(i)
+        s = periods.getStartS(i)
+        e = periods.getEndS(i)
         label = by_apr(filtered[s:e])
 
         liftDataSec._labels[s:e] = [label] * (e - s)
@@ -385,10 +385,10 @@ class LiftData:
     # Пока что возвращает все процессы, которые удается найти
     def getData(self):
         p = self.periods
-        start = p.start()
-        end = p.end()
-        duration = p.dt()
-        y = p.label()
+        start = p.getAllStartsHMS()
+        end = p.getAllEndsHMS()
+        duration = p.getAllDtsSec()
+        y = p.getAllLabelNames()
 
         return {
             'data': {
