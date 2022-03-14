@@ -8,6 +8,9 @@ import cv2
 import openpyxl
 
 
+""" TIME CONVERTER """
+
+
 def sec2hms(secArg):
     return str(datetime.timedelta(seconds=secArg))
 
@@ -18,6 +21,7 @@ def hms2sec(strHMS):
     return int(datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s)).total_seconds())
 
 
+""" Labels Enum """
 
 
 """ Label - вид процесса"""
@@ -29,6 +33,7 @@ class Label(Enum):
     OTHER = 3
 
 
+"""  Data Wrappers """
 
 
 """
@@ -63,7 +68,7 @@ class LiftDataSec:
 
 """ 
     В периодах пока нет NODATA
-    all periods - время операции, промежуток от первого ненулевого значения до нулевого значения
+    all periods - время обнаруженных операций, промежуток от первого ненулевого значения до нулевого значения
     Примеры: 
         1. list [0 1 2 3 0] -- period [1, 4), Label.UP
         2. list [0 1 2 3 4] -- period [1, len(list)), Label.UP
@@ -108,13 +113,13 @@ class LiftOpsPeriods:
         return self.endS(id) - self.startS(id)
 
     def startHMS(self, id):
-        return sec2hms(self._allPeriods[id][0])
+        return sec2hms(self.startS(id))
 
     def endHMS(self, id):
-        return sec2hms(self._allPeriods[id][1])
+        return sec2hms(self.endS(id))
 
     def dtHMS(self, id):
-        return sec2hms(self.endS(id) - self.startS(id))
+        return sec2hms(self.endS(id))
 
     def label(self, id):
         return self._allLabels[id]
@@ -123,8 +128,8 @@ class LiftOpsPeriods:
         return len(self._allPeriods)
 
     def __str__(self):
-        return "allPeriods: " + str(self._allPeriods) + "\nallLabels: " + str(self._allLabels) + \
-               "\nperiods: " + str(self._periods) + "\nlabels: " + str(self._labels)
+        return "allPeriods: " + str(self._allPeriods) + "\nallLabels: " + str(self._allLabels)
+               # + "\nperiods: " + str(self._periods) + "\nlabels: " + str(self._labels)
 
     """ 
         Объединение одинаковых последовательных операций в одну 
@@ -154,6 +159,7 @@ class LiftOpsPeriods:
     #                 self._labels.append(lastLabel)
 
 
+""" DATA IO"""
 
 
 """ 
@@ -179,6 +185,7 @@ def loadLiftDataSec(xlsx_dir, liftData=LiftDataSec(), day=0):
     return
 
 
+""" VISUAL FILTER """
 
 
 def vec2plotMat(dataHodler):
@@ -301,6 +308,7 @@ def visual_filter(liftData):
     return plotMat2vec(img3)
 
 
+""" PREDICTOR """
 
 
 def by_apr(y):
@@ -341,13 +349,17 @@ def predict_labels(liftDataSec):
     return periods
 
 
+""" MAIN ABSTRACTION """
 
 
 class LiftData:
+
+    # @param xlsx_files -- лист файлов
+    #  <- процессы могут перетекать изо дня в день -> брать день по названию файла, не совсем правильно, если это лист
     def __init__(self, xlsx_files):
         # base, ext = os.path.splitext(xlsx_files[0])
         # dirpath, filename = os.path.split(base)
-        self.date = Path(xlsx_files[0]).stem # Без нескольких расширений
+        self.date = Path(xlsx_files[0]).stem # Без нескольких расширений файла
 
         self.liftDataSec = self.__loadData(xlsx_files)
         self.periods = predict_labels(self.liftDataSec)
@@ -364,8 +376,8 @@ class LiftData:
 
         p = self.periods
         for id in range(len(p)):
-            start.append(self.date +" "+ p.startHMS(id))
-            end.append(self.date +" " + p.endHMS(id))
+            start.append(self.date + " " + p.startHMS(id))
+            end.append(self.date + " " + p.endHMS(id))
             duration.append(p.dtS(id))
             y.append(p.label(id).name)
 
@@ -377,11 +389,3 @@ class LiftData:
                 'y': y
             }
         }
-
-
-# Возврат листа по секундно (hmsTime - label)
-# def labelsBySeconds(liftData):
-#     res = []
-#     for s in range(len(liftData.liftDataSec)):
-#         res.append(sec2hms(s) + " " + liftData.liftDataSec._labels[s].name)
-#     return res
