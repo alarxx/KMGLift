@@ -11,8 +11,18 @@ import openpyxl
 """ TIME CONVERTER """
 
 
-def sec2hms(secArg):
-    return str(datetime.timedelta(seconds=secArg))
+def sec2hms(secArg, hours=True, minutes=True, seconds=True):
+    res = ""
+    spl = str(datetime.timedelta(seconds=secArg)).split(":")
+    isFirst = True
+    if hours:
+        res += spl[0]
+        isFirst = False
+    if minutes:
+        res += spl[1] if isFirst else (":" + spl[1])
+    if seconds:
+        res += spl[2] if isFirst else (":" + spl[2])
+    return res
 
 
 def hms2sec(strHMS):
@@ -110,7 +120,7 @@ class LiftOpsPeriods:
         return list(map(lambda x: sec2hms(x[1]), self._allPeriods))
 
     def getAllDtsSec(self):
-        return list(map(lambda x: (x[1] - x[0]), self._allPeriods))
+        return list(map(lambda x: sec2hms(x[1] - x[0], seconds=False), self._allPeriods))
 
     def getAllLabelsNames(self):
         return list(map(lambda x: x.name, self._allLabels))
