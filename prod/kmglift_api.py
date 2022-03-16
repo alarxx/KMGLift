@@ -113,18 +113,20 @@ class LiftOpsPeriods:
 
         return periods
 
+    # <-- Get all in list -->
     def getAllStartsHMS(self):
         return list(map(lambda x: sec2hms(x[0]), self._allPeriods))
 
     def getAllEndsHMS(self):
         return list(map(lambda x: sec2hms(x[1]), self._allPeriods))
 
-    def getAllDtsSec(self):
+    def getAllDurations(self):
         return list(map(lambda x: sec2hms(x[1] - x[0], seconds=False), self._allPeriods))
 
     def getAllLabelsNames(self):
         return list(map(lambda x: x.name, self._allLabels))
 
+    # <-- Get one by id -->
     def getStartS(self, id):
         return self._allPeriods[id][0]
 
@@ -135,13 +137,13 @@ class LiftOpsPeriods:
         return self.getEndS(id) - self.getStartS(id)
 
     def getStartHMS(self, id):
-        return sec2hms(self.startSec(id))
+        return sec2hms(self.getStartS(id))
 
     def getEndHMS(self, id):
-        return sec2hms(self.endSec(id))
+        return sec2hms(self.getEndS(id))
 
     def getDtHMS(self, id):
-        return sec2hms(self.endSec(id))
+        return sec2hms(self.getDtS(id))
 
     def getLabel(self, id):
         return self._allLabels[id]
@@ -397,7 +399,7 @@ class LiftData:
         p = self.periods
         start = p.getAllStartsHMS()
         end = p.getAllEndsHMS()
-        duration = p.getAllDtsSec()
+        duration = p.getAllDurations()
         y = p.getAllLabelsNames()
 
         return {
