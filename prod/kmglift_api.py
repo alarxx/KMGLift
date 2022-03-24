@@ -135,32 +135,32 @@ class LiftDataPeriods:
     def __str__(self):
         return "periods: " + str(self._periods) + "\nlabels: " + str(self._labels)
 
-    # """
-    #     Объединение одинаковых последовательных операций в одну
-    #     Не учитаваются, перескакивает промежутки между оперциями
-    # """
-    # def sameSequence(self):
-    #     #На этой стадии нет лейбла OTHER, только UP and DOWN
-    #     lastLabel = Label.OTHER
-    #     isClosed = True
-    #     for i in range(len(self)):
-    #         if isClosed:
-    #             # Открытие
-    #             self._periods.append([self.startS(i), self.endS(i)])
-    #             lastLabel = self.label(i)
-    #             isClosed = False
-    #         else:
-    #             # закрытие
-    #             if i == (len(self)-1): # Последняя оперция
-    #                 self._periods[len(self._periods) - 1][1] = self.endS(i)
-    #                 isClosed = True
-    #             elif lastLabel != self.label(i+1):
-    #                 self._periods[len(self._periods) - 1][1] = self.endS(i)
-    #                 isClosed = True
-    #
-    #             # Добавляем label
-    #             if isClosed == True:
-    #                 self._labels.append(lastLabel)
+# """
+#     Объединение одинаковых последовательных операций в одну
+#     Не учитаваются, перескакивает промежутки между оперциями
+# """
+# def sameSequence(self):
+#     #На этой стадии нет лейбла OTHER, только UP and DOWN
+#     lastLabel = Label.OTHER
+#     isClosed = True
+#     for i in range(len(self)):
+#         if isClosed:
+#             # Открытие
+#             self._periods.append([self.startS(i), self.endS(i)])
+#             lastLabel = self.label(i)
+#             isClosed = False
+#         else:
+#             # закрытие
+#             if i == (len(self)-1): # Последняя оперция
+#                 self._periods[len(self._periods) - 1][1] = self.endS(i)
+#                 isClosed = True
+#             elif lastLabel != self.label(i+1):
+#                 self._periods[len(self._periods) - 1][1] = self.endS(i)
+#                 isClosed = True
+#
+#             # Добавляем label
+#             if isClosed == True:
+#                 self._labels.append(lastLabel)
 
 
 """ Пероиды от нуля до нуля: 00-1234-000-123-... """

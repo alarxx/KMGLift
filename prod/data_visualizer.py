@@ -16,14 +16,14 @@ def visualize(y, isPlot=True):
     plt.show()
 
 
-"""vis_labels(dataHodler) or vis_labels(values=values, labels=labels)"""
-def vis_labels(hodler=None, values=[], labels=[]):
+"""vis_labels(LiftData) or vis_labels(values=values, labels=labels)"""
+def vis_labels(liftData=None, values=[], labels=[]):
     # circular import otherwise
     from prod.kmglift_api import LiftData, Label
 
-    if type(hodler) == LiftData:
-        values = hodler.liftDataSec._values
-        labels = hodler.liftDataSec._labels
+    if type(liftData) == LiftData:
+        values = liftData.liftDataSec._values
+        labels = liftData.liftDataSec._labels
 
     # [[NODATA], [UP], [DOWN], [OTHER-STAG]]
     x, y = [[], [], [], [], []], [[], [], [], [], []]
