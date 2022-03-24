@@ -3,17 +3,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def visualize(y, isPlot=True):
+def vis_vector(y, isPlot=True, title="Title", stop=False):
     x = list(range(len(y)))
     fig, ax = plt.subplots()
     if isPlot:
         ax.plot(x, y)
     else:
         ax.scatter(x, y)
+
+    ax.set_title(title)
     ax.set_xlabel("time")
     ax.set_ylabel("values")
-
-    plt.show()
+    
+    if stop:
+        plt.show()
+        cv2.waitKey(0)
+        plt.close()
 
 
 """vis_labels(LiftData) or vis_labels(values=values, labels=labels)"""
@@ -37,6 +42,7 @@ def vis_labels(liftData=None, values=[], labels=[]):
 
     #orig
     ax[0].plot(list(range(len(values))), values)
+    ax[0].set_title("orig")
 
     ax[1].scatter(x[0], y[0], label=Label.NODATA.name, c="b")
     ax[1].scatter(x[1], y[1], label=Label.DOWN.name, c="g")
@@ -44,11 +50,10 @@ def vis_labels(liftData=None, values=[], labels=[]):
     ax[1].scatter(x[3], y[3], label=Label.OTHER.name, c="y")
     ax[1].scatter(x[4], y[4], label=Label.ANOMALY.name, c="m")
 
+    ax[1].set_title("labels")
     ax[1].set_xlabel("time")
     ax[1].set_ylabel("values")
     ax[1].legend(loc="best")
-
-    plt.show()
 
 
 """
@@ -93,16 +98,20 @@ def squeeze(plotMat, window):
 
 """ Возвращает изображение 720px высотой и примерно 1280px шириной """
 def resize_plotMat(plotMat, width, height):
-    if len(plotMat[0]) < width:
-        print("check resize_plotMat")
-
     window = round(len(plotMat[0]) / width)
     mat = squeeze(plotMat, window) if window > 1 else plotMat
 
     # Возможны искажения при горизонтальных линиях
-    return cv2.resize(mat, (len(mat[0]), height))
+    res = cv2.resize(mat, (len(mat[0]), height))
+    if len(plotMat[0]) < width:
+        print("check resize_plotMat")
+        #print(len(plotMat[0]), len(plotMat), "\n", len(res[0]), len(res))
+
+    return res
 
 
 """ Возвращает изображение 720px высотой и примерно 1280px шириной """
 def imshow(title, img, width=1280, height=720):
+    width = 720
+    height = 480
     cv2.imshow(title, resize_plotMat(img, width, height))

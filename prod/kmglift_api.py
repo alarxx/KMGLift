@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 import openpyxl
 
-from prod.data_visualizer import imshow
+from prod.data_visualizer import imshow, vis_vector
 
 """ TIME CONVERTER """
 
@@ -222,7 +222,7 @@ def loadDataSec(xlsx_files):
 """ VISUAL FILTER """
 
 
-def vec2Mat(vec, isPlot=False):
+def vec2mat(vec, isPlot=False):
     # можем указать любую яркость
     px_brightness = 255
     # Значение всегда с десятичной дробью
@@ -268,12 +268,12 @@ def mat2vec(plotMat):
     Фильтрует и находит аномалии
 """
 def visual_filter(liftDataSec):
-    plotMat = vec2Mat(liftDataSec._values, isPlot=True)
+    plotMat = vec2mat(liftDataSec._values, isPlot=True)
 
     # Убираем горизонтальные линии типа ---
     kernel = np.ones((7, 1), np.uint8) # value*100kg
     lines = cv2.morphologyEx(plotMat, cv2.MORPH_OPEN, kernel)
-    # imshow("orig", plotMat)
+    imshow("orig", plotMat)
     # imshow("lines", lines)
 
     # Заполняем фигуру
@@ -284,32 +284,49 @@ def visual_filter(liftDataSec):
     # Фильтруем шум - выбросы
     kernel = np.ones((1, hms2sec(seconds=7)), np.uint8)
     filtered = cv2.morphologyEx(fill, cv2.MORPH_OPEN, kernel)
-    # imshow("filtered", filtered)
+    imshow("filtered", filtered)
 
-    # anomalies = fill - filtered
+    anomalies = fill - filtered
     # imshow("anomalies", anomalies)
     # kernel = np.ones((5, 1), np.uint8)  # value*100kg
     # anomalies = cv2.morphologyEx(anomalies, cv2.MORPH_OPEN, kernel)
     # imshow("anomalies", anomalies)
     # anomalies = mat2vec(anomalies)
 
-    return fill, filtered
+    return mat2vec(filtered), mat2vec(anomalies)
 
 
 """ PREDICTOR """
 
 
-def classify_process(y):
-    y = mat2vec(y)
+def getMSE(values, periods):
+    mse = np.zeros((len(values)))
 
+    for i in range(len(periods)):
+        s = periods.getStartS(i)
+        e = periods.getEndS(i)
+
+        period_values = values[s:e]
+
+        x = list(range(s, e))
+        z = np.polyfit(x, np.array(period_values), 1)
+        p = np.poly1d(z)
+
+        for i in range(s, e):
+            mse[i] = p(i)
+
+    return mse
+
+
+def classify_process(values):
     label = Label.OTHER
     # print(len(y))
     # if len(y) < 10:
     #     return label
     # y = np.delete(y, [0, 1, len(y)-2, len(y)-1])
 
-    x = range(len(y))
-    z = np.polyfit(x, np.array(y), 1)
+    x = range(len(values))
+    z = np.polyfit(x, np.array(values), 1)
 
     k = z[0]
     # print(k)
@@ -322,28 +339,25 @@ def classify_process(y):
     return label
 
 # returns periods with labels(OTHER, UP, DOWN)
-def classify_periods(filteredMat, process_periods):
+def classify_periods(filteredVals, process_periods):
+    vis_vector(getMSE(filteredVals, process_periods), title="MSE")
+
     for i in range(len(process_periods)):
         s = process_periods.getStartS(i)
         e = process_periods.getEndS(i)
 
-        window = filteredMat[0:len(filteredMat), s:e]
-
-        process_periods._labels[i] = classify_process(window)
+        values = filteredVals[s:e]
+        label = classify_process(values)
+        process_periods._labels[i] = label
 
     return process_periods
 
 
-def combine_periods(periods):
-    return periods
-
-
-def findAnomalies(fillMat, filteredMat, liftDataSec, process_periods):
+def findAnomalies(possible_anomalies, liftDataSec, process_periods):
     # fill-filtered должно быть выше диагонали и с соседями что-то больше чем 5тонн
     anomaliesAt = []
 
-    anomalies = mat2vec(fillMat - filteredMat)
-    for i, v in enumerate(anomalies):
+    for i, v in enumerate(possible_anomalies):
         if v > 0:
             anomaliesAt.append(i)
 
@@ -351,29 +365,14 @@ def findAnomalies(fillMat, filteredMat, liftDataSec, process_periods):
         s = process_periods.getStartS(i)
         e = process_periods.getEndS(i)
 
-        window = filteredMat[0:len(filteredMat), s:e]
-
+        # window = filteredMat[0:len(filteredMat), s:e]
         # anomalies должны быть выше диагонали
 
     return anomaliesAt
 
 
-def inspectData(liftDataSec):
-    # Если получится сделать идею с диагональю без матрицы, то можно возвращать вектор фильтрованных значений и возможных аномалий
-    fillMat, filteredMat = visual_filter(liftDataSec)
-
-    filteredVals = mat2vec(filteredMat)
-    process_periods = periods_between_zeros(filteredVals)
-
-    process_periods = classify_periods(filteredMat, process_periods)
-
-    anomaliesAt = findAnomalies(fillMat, filteredMat, liftDataSec, process_periods)
-
-    periods = combine_periods(process_periods)
-
-    setSecLabels(liftDataSec, periods, anomaliesAt)
-
-    return periods, anomaliesAt
+def combine_periods(periods):
+    return periods
 
 
 def setSecLabels(liftDataSec, liftDataPeriods, anomaliesAt):
@@ -385,6 +384,23 @@ def setSecLabels(liftDataSec, liftDataPeriods, anomaliesAt):
 
     for i, v in enumerate(anomaliesAt):
         liftDataSec._labels[v] = Label.ANOMALY
+
+
+def inspectData(liftDataSec):
+    # Если получится сделать идею с диагональю без матрицы, то можно возвращать вектор фильтрованных значений и возможных аномалий
+    filteredVals, perhaps_anomalies = visual_filter(liftDataSec)
+
+    process_periods = periods_between_zeros(filteredVals)
+
+    process_periods = classify_periods(filteredVals, process_periods)
+
+    anomaliesAt = findAnomalies(perhaps_anomalies, liftDataSec, process_periods)
+
+    periods = combine_periods(process_periods)
+
+    setSecLabels(liftDataSec, periods, anomaliesAt)
+
+    return periods, anomaliesAt
 
 
 """ MAIN ABSTRACTION """

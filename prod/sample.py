@@ -1,4 +1,5 @@
 import cv2
+from matplotlib import pyplot as plt
 
 from prod.data_visualizer import vis_labels
 from prod.kmglift_api import LiftData
@@ -18,3 +19,4 @@ if __name__ == "__main__":
     vis_labels(liftData)
 
     cv2.waitKey(0)
+    plt.show()
