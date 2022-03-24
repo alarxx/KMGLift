@@ -17,7 +17,7 @@ def vis_labels(hodler=None, values=[], labels=[]):
     if len(values) == 0 and len(labels) == 0:
         if type(hodler) == LiftDataSec:
             values = hodler._values
-            labels = hodler._allLabels
+            labels = hodler._labels
         else: # type(liftData) == LiftData
             values = hodler.liftDataSec._values
             labels = hodler.liftDataSec._labels
