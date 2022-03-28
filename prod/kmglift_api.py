@@ -1,5 +1,7 @@
 import datetime
+import os
 from enum import Enum, unique
+from pathlib import Path
 
 import numpy as np
 import cv2
@@ -473,3 +475,13 @@ class LiftData:
             res += f"{labels[i]} -- {start[i]}-{end[i]}; duration={duration[i]}\n"
 
         return res
+
+
+def findOperation(wellName, date):
+    filepath = os.getcwd() + '/service/' + 'Данные/' + wellName + '/'
+    filepath = Path(filepath)
+    f2 = list(filepath.glob(date + '.xlsx'))[0]
+
+    liftData = LiftData([f2])  # [f1, f2] для, перетекающих изо дня в день, процессов
+
+    return liftData.getData()
