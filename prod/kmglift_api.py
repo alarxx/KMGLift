@@ -105,7 +105,7 @@ class LiftDataPeriods:
         return list(map(lambda x: sec2hms(x[1] - x[0], isS_visible=False), self._periods))
 
     def getAllLabelsNames(self):
-        return list(map(lambda x: x.name, self._labels))
+        return list(map(lambda x: translateLabel(x), self._labels))
 
     # <-- Get one by id -->
     def getStartS(self, id):
@@ -138,6 +138,15 @@ class LiftDataPeriods:
             res += f"{self._periods[i]} {self._labels[i]} \n"
         # return "periods: " + str(self._periods) + "\nlabels: " + str(self._labels)
         return res
+
+
+def translateLabel(label):
+    if label == Label.UP:
+        return "Спуск"
+    elif label == Label.DOWN:
+        return "Подъем"
+    else:
+        return "Другое"
 
 
 """
