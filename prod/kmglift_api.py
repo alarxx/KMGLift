@@ -340,7 +340,7 @@ def classify_process(values):
 
     k = z[0]
     # print(k)
-    min_grad = 0.0001
+    min_grad = 0.0003
     if k > min_grad:
         label = Label.UP
     elif k < -min_grad:
