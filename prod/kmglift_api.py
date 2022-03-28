@@ -350,9 +350,9 @@ def classify_process(values):
 
 # returns periods with labels(OTHER, UP, DOWN)
 def classify_periods(filteredVals, process_periods):
-    draw_poly(values=filteredVals, periods=process_periods, order=1)
-    draw_poly(values=filteredVals, periods=process_periods, order=2)
-    draw_poly(values=filteredVals, periods=process_periods, order=3)
+    # draw_poly(values=filteredVals, periods=process_periods, order=1)
+    # draw_poly(values=filteredVals, periods=process_periods, order=2)
+    # draw_poly(values=filteredVals, periods=process_periods, order=3)
 
     for i in range(len(process_periods)):
         s = process_periods.getStartS(i)
