@@ -14,9 +14,11 @@ if __name__ == "__main__":
     # print(liftData.liftDataSec)
     # print(liftData.periods)
 
+    # print(liftData)
+
     print(liftData.getData())
 
-    vis_labels(liftData)
+    # vis_labels(liftData)
 
-    cv2.waitKey(0)
-    plt.show()
+    # cv2.waitKey(0)
+    # plt.show()

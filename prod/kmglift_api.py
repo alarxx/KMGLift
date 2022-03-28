@@ -90,9 +90,9 @@ class LiftDataPeriods:
     """
         @ periods - list of [startTime, endTime]
     """
-    def __init__(self, periods):
+    def __init__(self, periods=[], labels="nodata"):
         self._periods = periods
-        self._labels = [Label.OTHER] * len(self._periods)
+        self._labels = [Label.OTHER] * len(self._periods) if labels=="nodata" else labels
 
     # <-- Get all in list -->
     def getAllStartsHMS(self):
@@ -133,34 +133,40 @@ class LiftDataPeriods:
         return len(self._periods)
 
     def __str__(self):
-        return "periods: " + str(self._periods) + "\nlabels: " + str(self._labels)
+        res = ""
+        for i in range(len(self)):
+            res += f"{self._periods[i]} {self._labels[i]} \n"
+        # return "periods: " + str(self._periods) + "\nlabels: " + str(self._labels)
+        return res
 
-# """
-#     Объединение одинаковых последовательных операций в одну
-#     Не учитаваются, перескакивает промежутки между оперциями
-# """
-# def sameSequence(self):
-#     #На этой стадии нет лейбла OTHER, только UP and DOWN
-#     lastLabel = Label.OTHER
-#     isClosed = True
-#     for i in range(len(self)):
-#         if isClosed:
-#             # Открытие
-#             self._periods.append([self.startS(i), self.endS(i)])
-#             lastLabel = self.label(i)
-#             isClosed = False
-#         else:
-#             # закрытие
-#             if i == (len(self)-1): # Последняя оперция
-#                 self._periods[len(self._periods) - 1][1] = self.endS(i)
-#                 isClosed = True
-#             elif lastLabel != self.label(i+1):
-#                 self._periods[len(self._periods) - 1][1] = self.endS(i)
-#                 isClosed = True
-#
-#             # Добавляем label
-#             if isClosed == True:
-#                 self._labels.append(lastLabel)
+
+"""
+    Объединение одинаковых последовательных операций в одну
+    Не учитаваются, перескакивает промежутки между оперциями
+"""
+def sameSequence(old_periods):
+    periods = LiftDataPeriods()
+
+    lastLabel = None
+    isClosed = True
+
+    for i in range(len(old_periods)):
+
+        if isClosed:
+            # Открытие
+            periods._periods.append([old_periods.getStartS(i), old_periods.getEndS(i)])
+            lastLabel = old_periods.getLabel(i)
+
+            isClosed = False
+
+        if not isClosed:
+            # закрытие, либо если последняя операция, либо если нынешняя операция не похожа на следующую
+            if i == (len(old_periods)-1) or lastLabel != old_periods.getLabel(i+1):
+                periods._periods[len(periods) - 1][1] = old_periods.getEndS(i)
+                periods._labels.append(lastLabel)
+                isClosed = True
+
+    return periods
 
 
 """ Пероиды от нуля до нуля: 00-1234-000-123-... """
@@ -273,7 +279,7 @@ def visual_filter(liftDataSec):
     # Убираем горизонтальные линии типа ---
     kernel = np.ones((7, 1), np.uint8) # value*100kg
     lines = cv2.morphologyEx(plotMat, cv2.MORPH_OPEN, kernel)
-    imshow("orig", plotMat)
+    # imshow("orig", plotMat)
     # imshow("lines", lines)
 
     # Заполняем фигуру
@@ -282,9 +288,9 @@ def visual_filter(liftDataSec):
     # imshow("fill", fill)
 
     # Фильтруем шум - выбросы
-    kernel = np.ones((1, hms2sec(seconds=7)), np.uint8)
+    kernel = np.ones((1, hms2sec(minutes=3)), np.uint8)
     filtered = cv2.morphologyEx(fill, cv2.MORPH_OPEN, kernel)
-    imshow("filtered", filtered)
+    # imshow("filtered", filtered)
 
     anomalies = fill - filtered
     # imshow("anomalies", anomalies)
@@ -334,7 +340,7 @@ def classify_process(values):
 
     k = z[0]
     # print(k)
-    min_grad = 0.0005
+    min_grad = 0.0001
     if k > min_grad:
         label = Label.UP
     elif k < -min_grad:
@@ -344,6 +350,8 @@ def classify_process(values):
 
 # returns periods with labels(OTHER, UP, DOWN)
 def classify_periods(filteredVals, process_periods):
+    draw_poly(values=filteredVals, periods=process_periods, order=1)
+    draw_poly(values=filteredVals, periods=process_periods, order=2)
     draw_poly(values=filteredVals, periods=process_periods, order=3)
 
     for i in range(len(process_periods)):
@@ -376,7 +384,7 @@ def findAnomalies(possible_anomalies, liftDataSec, process_periods):
 
 
 def combine_periods(periods):
-    return periods
+    return sameSequence(periods)
 
 
 def setSecLabels(liftDataSec, liftDataPeriods, anomaliesAt):
@@ -437,13 +445,27 @@ class LiftData:
         start = p.getAllStartsHMS()
         end = p.getAllEndsHMS()
         duration = p.getAllDurations()
-        y = p.getAllLabelsNames()
+        labels = p.getAllLabelsNames()
 
         return {
             'data': {
                 'start': start,
                 'end': end,
                 'duration': duration,
-                'y': y
+                'y': labels
             }
         }
+
+    def __str__(self):
+        p = self.periods
+        start = p.getAllStartsHMS()
+        end = p.getAllEndsHMS()
+        duration = p.getAllDurations()
+        labels = p.getAllLabelsNames()
+
+        res = ""
+
+        for i in range(len(labels)):
+            res += f"{labels[i]} -- {start[i]}-{end[i]}; duration={duration[i]}\n"
+
+        return res
