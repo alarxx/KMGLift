@@ -2,6 +2,8 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
+from prod.kmglift_api import getPoly
+
 
 def vis_vector(y, isPlot=True, title="Title", stop=False):
     x = list(range(len(y)))
@@ -117,3 +119,7 @@ def imshow(title, img, width=1280, height=720):
     width = 720
     height = 480
     cv2.imshow(title, resize_plotMat(img, width, height))
+
+
+def draw_poly(values, periods, order):
+    vis_vector(getPoly(values, periods, order), title=f"poly{order}")

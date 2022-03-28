@@ -5,7 +5,6 @@ import numpy as np
 import cv2
 import openpyxl
 
-from prod.data_visualizer import imshow, vis_vector
 
 """ TIME CONVERTER """
 
@@ -331,10 +330,6 @@ def getPoly(values, periods, order=1):
             mse[i] = p(i)
 
     return mse
-
-
-def draw_poly(values, periods, order):
-    vis_vector(getPoly(values, periods, order), title=f"poly{order}")
 
 
 def classify_process(values):
