@@ -249,15 +249,15 @@ def vec2mat(vec, isPlot=False):
     return mat
 
 
-def mat2vec(plotMat):
-    rows = len(plotMat)
-    cols = len(plotMat[0])
+def mat2vec(mat):
+    rows = len(mat)
+    cols = len(mat[0])
 
     vec = np.zeros(cols)
     # Берем самое большое(высокое) значение
     for c in range(cols):
         for r in range(rows):
-            if plotMat[r][c] > 0:
+            if mat[r][c] > 0:
                 vec[c] = (rows - r - 1) / 10
                 break
     return vec
@@ -299,7 +299,7 @@ def visual_filter(liftDataSec):
 """ PREDICTOR """
 
 
-def getMSE(values, periods):
+def getPoly(values, periods, order=1):
     mse = np.zeros((len(values)))
 
     for i in range(len(periods)):
@@ -309,13 +309,17 @@ def getMSE(values, periods):
         period_values = values[s:e]
 
         x = list(range(s, e))
-        z = np.polyfit(x, np.array(period_values), 1)
+        z = np.polyfit(x, np.array(period_values), order)
         p = np.poly1d(z)
 
         for i in range(s, e):
             mse[i] = p(i)
 
     return mse
+
+
+def draw_poly(values, periods, order):
+    vis_vector(getPoly(values, periods, order), title=f"poly{order}")
 
 
 def classify_process(values):
@@ -340,7 +344,7 @@ def classify_process(values):
 
 # returns periods with labels(OTHER, UP, DOWN)
 def classify_periods(filteredVals, process_periods):
-    vis_vector(getMSE(filteredVals, process_periods), title="MSE")
+    draw_poly(values=filteredVals, periods=process_periods, order=3)
 
     for i in range(len(process_periods)):
         s = process_periods.getStartS(i)

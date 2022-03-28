@@ -30,6 +30,8 @@ def vis_labels(liftData=None, values=[], labels=[]):
         values = liftData.liftDataSec._values
         labels = liftData.liftDataSec._labels
 
+    vis_vector(values, title="orig")
+
     # [[NODATA], [UP], [DOWN], [OTHER-STAG]]
     x, y = [[], [], [], [], []], [[], [], [], [], []]
 
