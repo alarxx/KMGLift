@@ -49,6 +49,15 @@ class Label(Enum):
     ANOMALY = 4
 
 
+def translateLabel(label):
+    if label == Label.UP:
+        return "Спуск"
+    elif label == Label.DOWN:
+        return "Подъем"
+    else:
+        return "Другое"
+
+
 """  Data Wrappers """
 
 
@@ -138,15 +147,6 @@ class LiftDataPeriods:
             res += f"{self._periods[i]} {self._labels[i]} \n"
         # return "periods: " + str(self._periods) + "\nlabels: " + str(self._labels)
         return res
-
-
-def translateLabel(label):
-    if label == Label.UP:
-        return "Спуск"
-    elif label == Label.DOWN:
-        return "Подъем"
-    else:
-        return "Другое"
 
 
 """
