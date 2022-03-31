@@ -8,11 +8,8 @@ import cv2
 import openpyxl
 
 
-""" TIME CONVERTER """
-
-
 def sec2hms(secArg, isH_visible=True, isM_visible=True, isS_visible=True):
-    if secArg > 24*60*60:
+    if secArg > 24 * 60 * 60:
         print("more than one day")
     res = ""
     spl = str(datetime.timedelta(seconds=secArg)).split(":")
@@ -22,6 +19,7 @@ def sec2hms(secArg, isH_visible=True, isM_visible=True, isS_visible=True):
         isFirst = False
     if isM_visible:
         res += spl[1] if isFirst else (":" + spl[1])
+
     if isS_visible:
         res += spl[2] if isFirst else (":" + spl[2])
 
@@ -39,8 +37,9 @@ def hms2sec(strHMS="", hours=0, minutes=0, seconds=0):
 
 """ Labels Enum """
 
-
 """ Label - вид процесса"""
+
+
 @unique
 class Label(Enum):
     NODATA = 0
@@ -61,17 +60,19 @@ def translateLabel(label):
 
 """  Data Wrappers """
 
-
 """
     Класс отвечает только за хранение данных в секундах.
     За обратную интерпретацию должен отвечать уже другой класс
 """
+
+
 class LiftDataSec:
     def __init__(self):
         self._values = []
         self._labels = []
 
     """ Каждый индекс - секунда, пропуски обозначаются как NODATA """
+
     def add(self, sec, value, label=Label.OTHER):
         miss = (sec - len(self))
         self._values.extend([0] * miss + [value])
@@ -93,16 +94,20 @@ class LiftDataSec:
         1. list [0 1 2 3 0] -- period [1, 4), Label.UP
         2. list [0 1 2 3 4] -- period [1, len(list)), Label.UP
     Каждый период имеет label
-    
+
     period - объединенные последовательные и одинаковые процессы
 """
+
+
 class LiftDataPeriods:
     """
         @ periods - list of [startTime, endTime]
     """
-    def __init__(self, periods=[], labels="nodata"):
+
+    def __init__(self, periods, labels="nodata"):
+        # print(f"init LiftDataPeriods periods={periods}")
         self._periods = periods
-        self._labels = [Label.OTHER] * len(self._periods) if labels=="nodata" else labels
+        self._labels = [Label.OTHER] * len(self._periods) if labels == "nodata" else labels
 
     # <-- Get all in list -->
     def getAllStartsHMS(self):
@@ -154,8 +159,11 @@ class LiftDataPeriods:
     Объединение одинаковых последовательных операций в одну
     Не учитаваются, перескакивает промежутки между оперциями
 """
+
+
 def sameSequence(old_periods):
-    periods = LiftDataPeriods()
+    periods = []
+    labels = []
 
     lastLabel = None
     isClosed = True
@@ -164,22 +172,24 @@ def sameSequence(old_periods):
 
         if isClosed:
             # Открытие
-            periods._periods.append([old_periods.getStartS(i), old_periods.getEndS(i)])
+            periods.append([old_periods.getStartS(i), old_periods.getEndS(i)])
             lastLabel = old_periods.getLabel(i)
 
             isClosed = False
 
         if not isClosed:
             # закрытие, либо если последняя операция, либо если нынешняя операция не похожа на следующую
-            if i == (len(old_periods)-1) or lastLabel != old_periods.getLabel(i+1):
-                periods._periods[len(periods) - 1][1] = old_periods.getEndS(i)
-                periods._labels.append(lastLabel)
+            if i == (len(old_periods) - 1) or lastLabel != old_periods.getLabel(i + 1):
+                periods[len(periods) - 1][1] = old_periods.getEndS(i)
+                labels.append(lastLabel)
                 isClosed = True
 
-    return periods
+    return LiftDataPeriods(periods=periods, labels=labels)
 
 
 """ Пероиды от нуля до нуля: 00-1234-000-123-... """
+
+
 def periods_between_zeros(values):
     periods = []
     # Сложнаватая логика, пересмотреть!
@@ -202,16 +212,21 @@ def periods_between_zeros(values):
 
 """ DATA IO"""
 
-
 """ 
     Stretches data by seconds.
     Returns holder of (values, labels).
 """
-def unpackData(xlsx_dir, liftData=LiftDataSec(), day=0):
+
+
+def loadDataSec(xlsx_dir): # liftData=LiftDataSec(), day=0
+    liftData = LiftDataSec()
+    day = 0
+
+    # print(xlsx_dir)
     book = openpyxl.open(xlsx_dir, read_only=True)
     sheet = book.active
 
-    daySec = day*86400
+    daySec = day * 86400
 
     for xlsx_strHMS, xlsx_val, xlsx_dur in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=0, max_col=3):
         if not (isinstance(xlsx_val.value, float) or isinstance(xlsx_val.value, int)):
@@ -220,19 +235,10 @@ def unpackData(xlsx_dir, liftData=LiftDataSec(), day=0):
         timeInSec = hms2sec(xlsx_strHMS.value)
         duration = hms2sec(xlsx_dur.value)
 
-        for s in range(timeInSec, timeInSec+duration):
+        for s in range(timeInSec, timeInSec + duration):
             liftData.add(daySec + s, xlsx_val.value)
 
     return liftData
-
-
-def loadDataSec(xlsx_files):
-    liftDataSec = LiftDataSec()
-
-    for i in range(len(xlsx_files)):
-        unpackData(xlsx_files[i], liftDataSec, i)
-
-    return liftDataSec
 
 
 """ VISUAL FILTER """
@@ -283,11 +289,13 @@ def mat2vec(mat):
     Как лучше назвать, чтобы понятно было, что матрицы возвращает, а не вектор
     Фильтрует и находит аномалии
 """
+
+
 def visual_filter(liftDataSec):
     plotMat = vec2mat(liftDataSec._values, isPlot=True)
 
     # Убираем горизонтальные линии типа ---
-    kernel = np.ones((7, 1), np.uint8) # value*100kg
+    kernel = np.ones((7, 1), np.uint8)  # value*100kg
     lines = cv2.morphologyEx(plotMat, cv2.MORPH_OPEN, kernel)
     # imshow("orig", plotMat)
     # imshow("lines", lines)
@@ -302,14 +310,14 @@ def visual_filter(liftDataSec):
     filtered = cv2.morphologyEx(fill, cv2.MORPH_OPEN, kernel)
     # imshow("filtered", filtered)
 
-    anomalies = fill - filtered
+    anomalies = [] # mat2vec(fill - filtered)
     # imshow("anomalies", anomalies)
     # kernel = np.ones((5, 1), np.uint8)  # value*100kg
     # anomalies = cv2.morphologyEx(anomalies, cv2.MORPH_OPEN, kernel)
     # imshow("anomalies", anomalies)
     # anomalies = mat2vec(anomalies)
 
-    return mat2vec(filtered), mat2vec(anomalies)
+    return mat2vec(filtered), anomalies
 
 
 """ PREDICTOR """
@@ -353,6 +361,7 @@ def classify_process(values):
         label = Label.DOWN
 
     return label
+
 
 # returns periods with labels(OTHER, UP, DOWN)
 def classify_periods(filteredVals, process_periods):
@@ -412,11 +421,11 @@ def inspectData(liftDataSec):
 
     process_periods = classify_periods(filteredVals, process_periods)
 
-    anomaliesAt = findAnomalies(perhaps_anomalies, liftDataSec, process_periods)
+    anomaliesAt = []#findAnomalies(perhaps_anomalies, liftDataSec, process_periods)
 
     periods = combine_periods(process_periods)
 
-    setSecLabels(liftDataSec, periods, anomaliesAt)
+    # setSecLabels(liftDataSec, periods, anomaliesAt)
 
     return periods, anomaliesAt
 
@@ -434,11 +443,9 @@ class LiftData:
         @param xlsx_files -- лист файлов должен быть, можно передавать один файл
         <- процессы могут перетекать изо дня в день -> брать день по названию файла, не совсем правильно, если это лист
     """
-    def __init__(self, xlsx_files):
-        if type(xlsx_files) != list:
-            xlsx_files = [xlsx_files]
 
-        self.liftDataSec = loadDataSec(xlsx_files)
+    def __init__(self, xlsx_file):
+        self.liftDataSec = loadDataSec(xlsx_file)
 
         self.periods, self.anomaliesAt = inspectData(self.liftDataSec)
 
@@ -446,6 +453,7 @@ class LiftData:
         Расчитан на данные одного дня,
         но процессы могут длиться днями
     """
+
     def getData(self):
         p = self.periods
         start = p.getAllStartsHMS()
@@ -453,35 +461,25 @@ class LiftData:
         duration = p.getAllDurations()
         labels = p.getAllLabelsNames()
 
-        return {
-            'data': {
-                'start': start,
-                'end': end,
-                'duration': duration,
-                'y': labels
+        data = []
+        rowNumber = 0
+        for i in range(len(start)):
+            dict = {
+                'rowNumber': rowNumber,
+                'start': start[i],
+                'end': end[i],
+                'duration': duration[i],
+                'y': labels[i]
             }
-        }
-
-    def __str__(self):
-        p = self.periods
-        start = p.getAllStartsHMS()
-        end = p.getAllEndsHMS()
-        duration = p.getAllDurations()
-        labels = p.getAllLabelsNames()
-
-        res = ""
-
-        for i in range(len(labels)):
-            res += f"{labels[i]} -- {start[i]}-{end[i]}; duration={duration[i]}\n"
-
-        return res
+            data.append(dict)
+            rowNumber += 1
+        return {'data': data}
 
 
 def findOperation(wellName, date):
-    filepath = os.getcwd() + '/service/' + 'Данные/' + wellName + '/'
+    filepath = os.getcwd() + '/assets/Данные/' + wellName + '/'
     filepath = Path(filepath)
     f2 = list(filepath.glob(date + '.xlsx'))[0]
 
-    liftData = LiftData([f2])  # [f1, f2] для, перетекающих изо дня в день, процессов
-
+    liftData = LiftData(f2)
     return liftData.getData()

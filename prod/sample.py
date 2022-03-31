@@ -10,15 +10,9 @@ if __name__ == "__main__":
     f = dir + "weight_12.06.xlsx"
 
     liftData = LiftData(f) # [f1, f2] для, перетекающих изо дня в день, процессов
-
-    # print(liftData.liftDataSec)
-    # print(liftData.periods)
-
-    # print(liftData)
-
     print(liftData.getData())
 
-    # vis_labels(liftData)
+    f = dir + "weight_13.06.xlsx"
 
-    # cv2.waitKey(0)
-    # plt.show()
+    liftData = LiftData(f)  # [f1, f2] для, перетекающих изо дня в день, процессов
+    print(liftData.getData())
