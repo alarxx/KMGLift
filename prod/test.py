@@ -1,21 +1,61 @@
-from prod.kmglift_api import vec2mat, mat2vec, Label, LiftDataPeriods, sameSequence, hms2sec
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+from prod.data_visualizer import vis_labels, imshow, resize_plotMat, squeeze
+from prod.kmglift_api import vec2mat, mat2vec, Label, LiftDataPeriods, sameSequence, hms2sec, loadDataSec
+from prod.lol import Canny
 
 
-def test_sameSeq():
-    old_periods = LiftDataPeriods(
-        periods=[[3316, 3661], [4327, 4342], [8355, 9488], [9734, 11301], [18568, 21144], [23041, 26865],
-                 [30143, 30865], [31312, 36822], [57213, 57414], [57985, 58071], [58490, 58830], [59957, 60278],
-                 [60469, 60640], [62268, 67352], [68129, 69677], [70129, 71391], [73150, 74486], [78023, 80471],
-                 [80754, 82306], [86279, 86397]],
-        labels=[Label.DOWN, Label.DOWN, Label.OTHER, Label.DOWN, Label.DOWN, Label.DOWN, Label.DOWN, Label.DOWN,
-                Label.DOWN, Label.DOWN, Label.UP, Label.OTHER, Label.OTHER, Label.UP, Label.UP, Label.UP, Label.UP,
-                Label.UP, Label.OTHER, Label.UP])
-    print(old_periods)
+""" 
+    Зануляем колебания в u*100kg (горизонтальные линии) 
+    --_-_- => 0 
+"""
+def remove_other(values):
+    plotMat = vec2mat(values, isPlot=True)
+    kernel = np.ones((7, 10), np.uint8)  # u*100kg
+    lines = cv2.morphologyEx(plotMat, cv2.MORPH_OPEN, kernel)
+    return mat2vec(lines)
 
-    periods = sameSequence(old_periods)
 
-    print(periods)
+""" Склеить без учета нулевых значений """
+def skip_zeros(values):
+    pass
+
+
+def visual_filter(values):
+    plotMat = vec2mat(values, isPlot=True)
+    # Убираем горизонтальные линии типа ---
+    kernel = np.ones((7, 1), np.uint8)  # value*100kg
+    lines = cv2.morphologyEx(plotMat, cv2.MORPH_OPEN, kernel)
+    imshow("lines", lines)
+
+    # gray = cv2.cvtColor(lines, cv2.COLOR_BGR2GRAY)
+    """ Данные сжимаются в 60 раз """
+    src = squeeze(lines, 1*60)
+    # print(src.shape)
+    filtered = mat2vec(src)
+    src = vec2mat(filtered, isPlot=False)
+
+    imshow("src", resize_plotMat(src, 720, 480))
+    cv2.waitKey(0)
+
+
+def main():
+    dir = "..\\assets\\KMG\\AKSH-283\\"
+    xlsx_file = dir + "weight_12.06.xlsx"
+
+    liftDataSec = loadDataSec(xlsx_file)
+
+    visual_filter(liftDataSec._values)
 
 
 if __name__ == "__main__":
-    print(hms2sec(seconds=180))
+    # arr = [0.0, 0.1, 0.2, 0.3, 0.4, 0.8, 0.3, 0.0, 0.0, 0.1, 0.1, 0.1, 0.1, 1, 2, 3]
+    # print(arr)
+    # mat = vec2mat(arr, isPlot=True)
+    # print(mat)
+    # vec = mat2vec(mat)
+    # print(vec)
+
+    main()

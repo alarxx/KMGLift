@@ -219,7 +219,7 @@ def periods_between_zeros(values):
 
 
 def loadDataSec(xlsx_dir): # liftData=LiftDataSec(), day=0
-    liftData = LiftDataSec()
+    liftDataSec = LiftDataSec()
     day = 0
 
     # print(xlsx_dir)
@@ -229,6 +229,7 @@ def loadDataSec(xlsx_dir): # liftData=LiftDataSec(), day=0
     daySec = day * 86400
 
     for xlsx_strHMS, xlsx_val, xlsx_dur in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=0, max_col=3):
+        # Пропускаем странные значения
         if not (isinstance(xlsx_val.value, float) or isinstance(xlsx_val.value, int)):
             continue
 
@@ -236,9 +237,9 @@ def loadDataSec(xlsx_dir): # liftData=LiftDataSec(), day=0
         duration = hms2sec(xlsx_dur.value)
 
         for s in range(timeInSec, timeInSec + duration):
-            liftData.add(daySec + s, xlsx_val.value)
+            liftDataSec.add(daySec + s, xlsx_val.value)
 
-    return liftData
+    return liftDataSec
 
 
 """ VISUAL FILTER """
@@ -246,27 +247,33 @@ def loadDataSec(xlsx_dir): # liftData=LiftDataSec(), day=0
 
 def vec2mat(vec, isPlot=False):
     # можем указать любую яркость
-    px_brightness = 255
+    px_brightness = int(255)
     # Значение всегда с десятичной дробью
     rows = int(max(vec) * 10)
     cols = len(vec)
 
-    mat = np.zeros((rows, cols))
+    mat = np.zeros((rows, cols), np.uint8)
 
     for col in range(cols):
-        # В зависимости от направления роста координат
-        row = rows - int(vec[col] * 10) - 1
-        mat[row][col] = px_brightness
+
+        #нулевые значения не отрисовываем
+        if vec[col] != 0:
+            # В зависимости от направления роста координат
+            row = rows - int(vec[col] * 10)
+            mat[row][col] = px_brightness
 
         # Дальше еще должны нарисовать линии от точки до следующей
         if isPlot:
-            if col == cols - 1:
+            if col >= cols - 1:
                 break
-            row1 = rows - int(vec[col + 1] * 10) - 1
+            row = rows - int(vec[col] * 10) if vec[col] != 0 else rows-1
+            row1 = rows - int(vec[col + 1] * 10)
             s = min(row, row1)
             e = max(row, row1)
-            for i in range(s, e + 1):
-                mat[i][col] = px_brightness
+            # Важно для обратного преобразования знать колонну, чтобы не перекрывать само значение
+            c = col+1 if row1 <= row else col
+            for i in range(s+1, e):
+                mat[i][c] = px_brightness
 
     return mat
 
@@ -280,7 +287,7 @@ def mat2vec(mat):
     for c in range(cols):
         for r in range(rows):
             if mat[r][c] > 0:
-                vec[c] = (rows - r - 1) / 10
+                vec[c] = (rows - r) / 10
                 break
     return vec
 

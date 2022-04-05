@@ -1,8 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-
-from prod.kmglift_api import getPoly
+from numpy import uint8
 
 
 def vis_vector(y, isPlot=True, title="Title", stop=False):
@@ -27,12 +26,16 @@ def vis_vector(y, isPlot=True, title="Title", stop=False):
 def vis_labels(liftData=None, values=[], labels=[]):
     # circular import otherwise
     from prod.kmglift_api import LiftData, Label
+    from prod.kmglift_api import getPoly, LiftDataSec
 
     if type(liftData) == LiftData:
         values = liftData.liftDataSec._values
         labels = liftData.liftDataSec._labels
+    elif type(liftData) == LiftDataSec:
+        values = liftData._values
+        labels = liftData._labels
 
-    vis_vector(values, title="orig")
+    # vis_vector(values, title="orig")
 
     # [[NODATA], [UP], [DOWN], [OTHER-STAG]]
     x, y = [[], [], [], [], []], [[], [], [], [], []]
@@ -87,7 +90,7 @@ def squeeze(plotMat, window):
         cols += 1
     rows = len(plotMat)
 
-    res = np.zeros((rows, cols))
+    res = np.zeros((rows, cols), dtype=uint8)
 
     for c in range(cols):
         for r in range(rows):
