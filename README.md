@@ -34,7 +34,9 @@
 
 ![Filters](https://github.com/Alar-q/KMGLift/blob/main/assets/4_TKRS_Tasks_Filter1.png)
 
-**Solution:**
+The task is easier to solve visually rather than by consistently observing each value. 
+
+**Processing by convolutions:**
 
 ![Solution_1](https://github.com/Alar-q/KMGLift/blob/main/assets/5_TKRS_Tasks_Sol1_1.png)
 
@@ -42,9 +44,11 @@
 
 ![Solution_3](https://github.com/Alar-q/KMGLift/blob/main/assets/7_TKRS_Tasks_Sol2.png)
 
-The exact slope: 
+**The exact slope:** 
 
 ![Solution_4](https://github.com/Alar-q/KMGLift/blob/main/assets/8_TKRS_Tasks_Sol3_1.png)
+
+**Solution:**
 
 ![Solution_5](https://github.com/Alar-q/KMGLift/blob/main/assets/9_TKRS_Tasks_Sol3.png)
 
