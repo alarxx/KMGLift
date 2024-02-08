@@ -42,6 +42,8 @@
 
 ![Solution_3](https://github.com/Alar-q/KMGLift/blob/main/assets/7_TKRS_Tasks_Sol2.png)
 
+The exact slope: 
+
 ![Solution_4](https://github.com/Alar-q/KMGLift/blob/main/assets/8_TKRS_Tasks_Sol3_1.png)
 
 ![Solution_5](https://github.com/Alar-q/KMGLift/blob/main/assets/9_TKRS_Tasks_Sol3.png)
