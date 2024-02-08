@@ -13,11 +13,14 @@
 - Конец
 - Продолжительность
 
-**Входящие данные:** Данные из датчика веса на крюке (время, значение, продолжительность)
+**Входящие данные:** Данные из датчика веса на крюке 
+- время
+- значение
+- продолжительность
 
 
-Task Visualization:
-
+**Task Visualization:
+**
 ![Task_Visualization](https://github.com/Alar-q/KMGLift/blob/main/assets/1_TKRS_Tasks_Example.png)
 
 Data Visualization:
