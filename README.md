@@ -1,6 +1,49 @@
 # KMGLift
 
+### Задачи по ТКРС
 
+**Определить тип операции:**
+- Подъем
+- Спуск
+- Простой
+- Другое
+
+**Определить продолжительность операции:**
+- Начало
+- Конец
+- Продолжительность
+
+**Входящие данные:** Данные из датчика веса на крюке (время, значение, продолжительность)
+
+
+Task Visualization:
+
+![Task_Visualization](https://github.com/Alar-q/KMGLift/blob/main/assets/1_TKRS_Tasks_Example.png)
+
+Data Visualization:
+
+![Data_Visualization1](https://github.com/Alar-q/KMGLift/blob/main/assets/2_TKRS_Tasks_Data1.png)
+
+![Data_Visualization2](https://github.com/Alar-q/KMGLift/blob/main/assets/3_TKRS_Tasks_Data2.png)
+
+
+Filters don't work, even make it worse:
+
+![Filters](https://github.com/Alar-q/KMGLift/blob/main/assets/4_TKRS_Tasks_Filter1.png)
+
+Solution:
+
+![Solution_1](https://github.com/Alar-q/KMGLift/blob/main/assets/5_TKRS_Tasks_Sol1_1.png)
+
+![Solution_2](https://github.com/Alar-q/KMGLift/blob/main/assets/6_TKRS_Tasks_Sol1.png)
+
+![Solution_3](https://github.com/Alar-q/KMGLift/blob/main/assets/7_TKRS_Tasks_Sol2.png)
+
+![Solution_4](https://github.com/Alar-q/KMGLift/blob/main/assets/8_TKRS_Tasks_Sol3_1.png)
+
+![Solution_5](https://github.com/Alar-q/KMGLift/blob/main/assets/9_TKRS_Tasks_Sol3.png)
+
+### Technical Description
 
 old:
     Одно деление равно 3-м секундам: 3s=1, 6s=2... -> 
