@@ -34,6 +34,8 @@
 
 ![Filters](https://github.com/Alar-q/KMGLift/blob/main/assets/4_TKRS_Tasks_Filter1.png)
 
+### Key Points
+
 The task is easier to solve visually rather than by consistently observing each value. 
 
 **Processing by convolutions:**
