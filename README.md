@@ -18,22 +18,24 @@
 - значение
 - продолжительность
 
-
+---
 **Task Visualization:**
 
 ![Task_Visualization](https://github.com/Alar-q/KMGLift/blob/main/assets/1_TKRS_Tasks_Example.png)
 
+---
 **Data Visualization:**
 
 ![Data_Visualization1](https://github.com/Alar-q/KMGLift/blob/main/assets/2_TKRS_Tasks_Data1.png)
 
 ![Data_Visualization2](https://github.com/Alar-q/KMGLift/blob/main/assets/3_TKRS_Tasks_Data2.png)
 
-
+---
 **Filters don't work, even make it worse:**
 
 ![Filters](https://github.com/Alar-q/KMGLift/blob/main/assets/4_TKRS_Tasks_Filter1.png)
 
+---
 ### Key Points
 
 The task is easier to solve visually rather than by consistently observing each value. 
@@ -54,6 +56,7 @@ The task is easier to solve visually rather than by consistently observing each 
 
 ![Solution_5](https://github.com/Alar-q/KMGLift/blob/main/assets/9_TKRS_Tasks_Sol3.png)
 
+---
 ### Technical Description
 
 old:
