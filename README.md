@@ -19,22 +19,22 @@
 - продолжительность
 
 
-**Task Visualization:
-**
+**Task Visualization:**
+
 ![Task_Visualization](https://github.com/Alar-q/KMGLift/blob/main/assets/1_TKRS_Tasks_Example.png)
 
-Data Visualization:
+**Data Visualization:**
 
 ![Data_Visualization1](https://github.com/Alar-q/KMGLift/blob/main/assets/2_TKRS_Tasks_Data1.png)
 
 ![Data_Visualization2](https://github.com/Alar-q/KMGLift/blob/main/assets/3_TKRS_Tasks_Data2.png)
 
 
-Filters don't work, even make it worse:
+**Filters don't work, even make it worse:**
 
 ![Filters](https://github.com/Alar-q/KMGLift/blob/main/assets/4_TKRS_Tasks_Filter1.png)
 
-Solution:
+**Solution:**
 
 ![Solution_1](https://github.com/Alar-q/KMGLift/blob/main/assets/5_TKRS_Tasks_Sol1_1.png)
 
